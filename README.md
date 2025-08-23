@@ -48,12 +48,12 @@ import (
 	"os"
 
 	// Import the client library using your project's module path
-	"wolfy-automotion/wolfyclient"
+	"github.com/go-lover/go-wolfy"
 )
 
 func main() {
-	// 1. Paste the session token you copied from your browser.
-	mySessionToken := "s%3A4f37e048-36e3-46ce-98d4-0104ec4dfd3f.YbeBW8gdQ8TURq6X%2BlATg%2BXPLHkMLl%2Fwxu8WaygZ9%2FM"
+	// 1. Paste the session token you copied from your browser. Should look like this: "s%3A1ae7777d-8501-4bb1-858f-11fb9ecf66a8.xPQ4zq69F59DPLBfZuhZBoDpU0Cgmozw"
+	mySessionToken := "YOUR_TOKEN"
 
 	// 2. Create a new client. The library automatically validates the token.
 	client, err := wolfyclient.NewClient(mySessionToken)
@@ -63,7 +63,7 @@ func main() {
 	fmt.Println("Client created and token validated successfully!")
 
 	// 3. Find a user's ID.
-	username := "Lychnide"
+	username := "SOMEONE"
 	userID, err := client.FindUserID(username)
 	if err != nil {
 		log.Fatalf("Could not find user %s: %v", username, err)
