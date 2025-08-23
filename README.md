@@ -9,14 +9,6 @@ This library handles session management via an authentication token and provides
 -   **Typed Structs:** Clear Go structs for all JSON API responses.
 -   **Advanced Skin Rendering:** A powerful function to download user skins with multiple formats (PNG, SVG), profiles (full, center, right), and sizes (small, large).
 
-## Installation & Setup
-
-Before using the library, you should host your project on a platform like GitHub. Once it is available at a public URL, you can add it to any Go project.
-
-```sh
-go get github.com/go-lover/go-wolfy
-```
-
 ### Authentication (Required)
 
 This library **does not** handle username/password login because the website is protected by a captcha. Instead, it authenticates by using a session token that you must retrieve from your browser.
