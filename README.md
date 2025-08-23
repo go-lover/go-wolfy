@@ -1,5 +1,5 @@
 # Wolfy.net Go API Client
-
+https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white
 An unofficial Go client library for interacting with the `wolfy.net` web API.
 
 This library handles session management via an authentication token and provides simple, typed methods for most common API actions, including fetching user data, managing friends, updating account settings, and rendering user skins.
