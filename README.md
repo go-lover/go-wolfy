@@ -17,8 +17,7 @@ This library handles session management via an authentication token and provides
 Before using the library, you should host your project on a platform like GitHub. Once it is available at a public URL, you can add it to any Go project.
 
 ```sh
-# Replace with my actual GitHub repository path
-go get github.com/your-username/wolfy-automotion/wolfyclient
+go get github.com/go-lover/go-wolfy
 ```
 
 ### Authentication (Required)
