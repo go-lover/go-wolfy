@@ -103,10 +103,10 @@ Retrieves the detailed profile for the currently authenticated user.
 #### `func (c *Client) GetPlayerInfo(usernameOrID string) (*PlayerInfoResponse, error)`
 Retrieves the detailed profile for any player by their username or ID.
 
-#### `func (c *Client) FindUserID(username string) (string, error)`
+#### `func (c *Client) GetUserID(username string) (string, error)`
 Finds a user by their exact username and returns their unique ID.
 
-#### `func (c *Client) GetFriends() ([]string, error)`
+#### `func (c *Client) GetFriendList() ([]string, error)`
 Retrieves a slice of user IDs representing the authenticated user's friend list.
 
 #### `func (c *Client) AddFriend(userID string) (*MessageResponse, error)`
@@ -125,13 +125,13 @@ Invalidates the current user's session on the server.
 #### `func (c *Client) CollectDailyItem() (string, error)`
 Attempts to claim the free daily item from the shop. Returns a plain text response from the API (e.g., "OK").
 
-#### `func (c *Client) UpdateUsername(newUsername string) (*MessageResponse, error)`
+#### `func (c *Client) ChangeUsername(newUsername string) (*MessageResponse, error)`
 Changes the authenticated user's username.
 
-#### `func (c *Client) UpdateEmail(newEmail string) (*MessageResponse, error)`
+#### `func (c *Client) ChangeEmail(newEmail string) (*MessageResponse, error)`
 Changes the authenticated user's email address.
 
-#### `func (c *Client) UpdatePassword(oldPassword, newPassword string) (*MessageResponse, error)`
+#### `func (c *Client) ChangePassword(oldPassword, newPassword string) (*MessageResponse, error)`
 Changes the authenticated user's password.
 
 ### Skin Rendering
