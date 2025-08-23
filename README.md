@@ -1,7 +1,7 @@
 # Wolfy.net Go API Client
 *An unofficial Go client library for interacting with the `wolfy.net` web API.*
 
-![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)](https://golang.org)
+[![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)](https://golang.org)
 ![Status](https://img.shields.io/badge/status-work--in--progress-orange) 
 <img src="{BadgeURLHere}" />
 
