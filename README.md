@@ -177,6 +177,13 @@ type PlayerUser struct {
 // Other sub-structs are defined in wolfyclient/models.go
 ```
 
+
+                 __                
+  ___ ____  ____/ /__ _  _____ ____
+ / _ `/ _ \/___/ / _ \ |/ / -_) __/
+ \_, /\___/   /_/\___/___/\__/_/   
+/___/                              
+
 ## Disclaimer
 
 This is an unofficial library and is not affiliated with, sponsored by, or endorsed by Wolfy.net. Please use this tool responsibly and be mindful of the service's terms of use. Do not abuse the API.
