@@ -27,7 +27,7 @@ You will provide this token when creating a new client instance. The library wil
 
 ## Usage Example
 
-Here is a complete example of how to import the library, create a client, and use some of its key features.
+Here is a complete example of how to import the library, create a client, and download someone's skin from the username.
 
 ```go
 package main
@@ -164,33 +164,6 @@ Retrieves the available Moon currency purchase options.
 
 #### `func (c *Client) CollectDailyItem() (string, error)`
 Attempts to claim the free daily item from the shop. Returns a plain text response from the API.## Data Structures
-
----
-
-The main data structure returned by the API for player lookups.
-
-```go
-// The full response for a player lookup.
-type PlayerInfoResponse struct {
-	User       PlayerUser         `json:"user"`
-	Statistics PlayerStatistics   `json:"statistics"`
-	History    []GameHistoryEntry `json:"history"`
-}
-
-// Detailed information about a player.
-type PlayerUser struct {
-	ID          string        `json:"id"`
-	Username    string        `json:"username"`
-	CreatedAt   string        `json:"createdAt"`
-	Rank        int           `json:"rank"`
-	XP          int           `json:"xp"`
-	SkinVersion string        `json:"skinVersion,string"`
-	Elo         int           `json:"elo"`
-	Ranking     PlayerRanking `json:"ranking"`
-}
-
-// Other sub-structs are defined in wolfyclient/models.go
-```    
 
 ## Disclaimer
 
