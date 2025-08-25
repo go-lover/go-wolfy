@@ -5,10 +5,25 @@ This library handles session management via an authentication token and provides
 
 ## Features
 
--   **Token Validation:** Automatically validates the session token upon client creation.
--   **Typed Structs:** Clear Go structs for all JSON API responses.
--   **Advanced Skin Rendering:** A powerful function to download user skins with multiple formats (PNG, SVG), profiles (full, center, right), and sizes (small, large).
--   **Rich Game History:** Access strongly-typed data for a player's recent games, including roles, outcomes, kills, and full game settings.
+*   **Comprehensive Typed Structs:** Clean, predictable Go structs for every API response, from user profiles to the entire shop catalog, enabling safe and easy data access.
+
+*   **Automatic Token Validation:** The client automatically validates the session token upon creation, providing immediate feedback and preventing runtime errors.
+
+*   **Full Account Management:** Fetch detailed public profiles, private account data (like currency and email), and programmatically update settings like username, password, or email.
+
+*   **Advanced Skin Customization:**
+    *   **Render:** Download user skins with multiple formats (PNG, SVG), profiles, and sizes.
+    *   **Edit:** Programmatically change the cosmetic items equipped in a user's active skin slot.
+
+*   **Complete Social Integration:** Manage the entire friend lifecycle (add/remove/list) and retrieve the friend-specific leaderboard.
+
+*   **Full Shop & Game Data Access:**
+    *   Download the **entire skin catalog** of all in-game items.
+    *   Get the current **featured item drop**.
+    *   Retrieve all **daily shop offers**, including the free item.
+    *   List all available **subscriptions** and **currency packs**.
+
+*   **Rich Game History:** Access strongly-typed data for a player's recent games, including roles, outcomes, kills, and full game settings.
 
 ### Authentication (Required)
 
