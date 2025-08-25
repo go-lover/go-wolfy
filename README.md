@@ -113,6 +113,9 @@ Finds a user by their exact username and returns their unique ID.
 #### `func (c *Client) GetFriendList() ([]string, error)`
 Retrieves a slice of user IDs representing the authenticated user's friend list.
 
+#### `func (c *Client) GetFriendLeaderboard() ([]LeaderboardEntry, error)`
+Retrieves the leaderboard of the authenticated user's friends, returning a slice of users with their rank and summary information.
+
 #### `func (c *Client) AddFriend(userID string) (*MessageResponse, error)`
 Sends a friend request to the specified user ID.
 
