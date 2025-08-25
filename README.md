@@ -157,9 +157,9 @@ The main data structure returned by the API for player lookups.
 ```go
 // The full response for a player lookup.
 type PlayerInfoResponse struct {
-	User       PlayerUser       `json:"user"`
-	Statistics PlayerStatistics `json:"statistics"`
-	History    []interface{}    `json:"history"`
+	User       PlayerUser         `json:"user"`
+	Statistics PlayerStatistics   `json:"statistics"`
+	History    []GameHistoryEntry `json:"history"`
 }
 
 // Detailed information about a player.
