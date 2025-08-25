@@ -1,7 +1,7 @@
 # Wolfy.net Go API Client [![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)](https://golang.org)
 *An unofficial Go client library for interacting with the `wolfy.net` web API.*
 
-This library handles session management via an authentication token and provides simple, typed methods to interact with nearly every aspect of the Wolfy.net API. It allows you to fetch detailed user profiles and game histories, manage friends, update account settings, and both render and programmatically change user skins. Furthermore, it offers complete access to the in-game economy, letting you retrieve the full skin catalog, daily shop offers, featured drops, and currency packs.
+> This library handles session management via an authentication token and provides simple, typed methods to interact with nearly every aspect of the Wolfy.net API. It allows you to fetch detailed user profiles and game histories, manage friends, update account settings, and both render and programmatically change user skins. Furthermore, it offers complete access to the in-game economy, letting you retrieve the full skin catalog, daily shop offers, featured drops, and currency packs.
 
 ## Features
 
