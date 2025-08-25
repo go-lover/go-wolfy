@@ -121,7 +121,7 @@ func main() {
 
 **Response Data Structure**
 
-This function returns a `UserAccountInfo` struct. The full definition, including all available fields and sub-structures like `Slot` and `Skin`, can be found in the `models.go` file.
+This function returns a `UserAccountInfo` struct. The full definition, including all available fields and sub-structures like `Slot` and `Skin`, can be found in the `types.go` file.
 
 ---
 
@@ -191,4 +191,4 @@ func main() {
 
 **Response Data Structure**
 
-This function returns a `PlayerInfoResponse` struct. This is a complex structure that includes the user's game history and detailed statistics. For a complete list of all available fields, please refer to the `models.go` file.
+This function returns a `PlayerInfoResponse` struct. This is a complex structure that includes the user's game history and detailed statistics. For a complete list of all available fields, please refer to the `types.go` file.
