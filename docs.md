@@ -215,7 +215,7 @@ func (c *Client) GetPlayerInfo(usernameOrID string) (*PlayerInfoResponse, error)
 
 **Usage Example**
 
-This example looks up the user "flic" and displays their rank, total kill count, and the outcome of their most recent game.
+This example looks up the user "SOMEONE" and displays their rank, total kill count, and the outcome of their most recent game.
 
 ```go
 package main
@@ -241,7 +241,7 @@ func main() {
 	fmt.Println("Client created successfully!")
 
 	// The username of the player we want to find.
-	usernameToFind := "flic"
+	usernameToFind := "SOMEONE"
 
 	// Fetch the public profile information for the specified user.
 	playerInfo, err := client.GetPlayerInfo(usernameToFind)
@@ -291,7 +291,7 @@ func (c *Client) GetUserID(username string) (string, error)
 
 **Usage Example**
 
-This example demonstrates how to find the user ID for the username "flic".
+This example demonstrates how to find the user ID for the username "SOMEONE".
 
 ```go
 package main
@@ -316,7 +316,7 @@ func main() {
 	}
 	fmt.Println("Client created successfully!")
 
-	usernameToFind := "flic"
+	usernameToFind := "SOMEONE"
 	fmt.Printf("\nLooking up user ID for: %s\n", usernameToFind)
 
 	// Use the GetUserID helper function.
@@ -332,5 +332,901 @@ func main() {
 **Notes**
 
 This function works by calling `GetPlayerInfo` internally and extracting the `ID` from the response.
+
+---
+
+### `GetFriendList`
+
+Retrieves the friend list of the currently authenticated user. The function returns a slice of strings, where each string is the unique user ID of a friend.
+
+**Function Signature**
+```go
+func (c *Client) GetFriendList() ([]string, error)
+```
+
+**Parameters**
+*   None.
+
+**Return Values**
+*   `([]string, nil)`: On success, returns a slice of user ID strings.
+*   `(nil, error)`: Returns an error if the API call fails.
+
+**Usage Example**
+
+This example fetches the authenticated user's friend list and prints the total number of friends, along with the first 5 user IDs in the list.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	// Fetch the user ID list for all friends.
+	friendIDs, err := client.GetFriendList()
+	if err != nil {
+		log.Fatalf("Failed to get friend list: %v", err)
+	}
+
+	fmt.Printf("\nSuccessfully fetched friend list. You have %d friends.\n", len(friendIDs))
+
+	// Print the first 5 friend IDs for demonstration.
+	if len(friendIDs) > 0 {
+		fmt.Println("--- First 5 Friend IDs ---")
+		for i, id := range friendIDs {
+			if i >= 5 {
+				break
+			}
+			fmt.Printf("  - %s\n", id)
+		}
+		fmt.Println("--------------------------")
+	}
+}
+```
+
+**Notes**
+
+This function returns a list of IDs. If you need the usernames or other details for these friends, you would need to loop through the returned slice and call `GetPlayerInfo` for each ID.
+
+---
+
+### `AddFriend`
+
+Sends a friend request to another user. This action requires the unique user ID of the person you want to add.
+
+**Function Signature**
+```go
+func (c *Client) AddFriend(userID string) (*MessageResponse, error)
+```
+
+**Parameters**
+*   `userID (string)`: The unique user ID of the player to send a friend request to.
+
+**Return Values**
+*   `(*MessageResponse, nil)`: On success, returns a pointer to a `MessageResponse` struct containing the API's confirmation message (e.g., "Friend request sent.").
+*   `(nil, error)`: Returns an error if the user ID is invalid or if the API call fails.
+
+**Usage Example**
+
+This example first finds the user ID for the username "SOMEONE" and then sends a friend request to that user.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	// Change this to a real username that you want to add.
+	usernameToAdd := "SOMEONE"
+	fmt.Printf("\nAttempting to send a friend request to '%s'...\n", usernameToAdd)
+
+	// Step 1: Get the user's ID from their username.
+	userID, err := client.GetUserID(usernameToAdd)
+	if err != nil {
+		log.Fatalf("Could not find user '%s': %v", usernameToAdd, err)
+	}
+	fmt.Printf("Found user ID: %s\n", userID)
+
+	// Step 2: Send the friend request using their ID.
+	response, err := client.AddFriend(userID)
+	if err != nil {
+		log.Fatalf("Failed to send friend request: %v", err)
+	}
+
+	// The API returns a simple confirmation message.
+	fmt.Printf("API Response: %s\n", response.Message)
+}
+```
+
+**Response Data Structure**
+
+This function returns a `MessageResponse` struct, which contains a single field:
+```go
+type MessageResponse struct {
+	Message string `json:"message"`
+}
+```
+
+---
+
+
+### `RemoveFriend`
+
+Removes a user from your friend list. This action requires the unique user ID of the person you want to remove.
+
+**Function Signature**
+```go
+func (c *Client) RemoveFriend(userID string) (*MessageResponse, error)
+```
+
+**Parameters**
+*   `userID (string)`: The unique user ID of the player to remove from your friend list.
+
+**Return Values**
+*   `(*MessageResponse, nil)`: On success, returns a pointer to a `MessageResponse` struct containing the API's confirmation message.
+*   `(nil, error)`: Returns an error if the user ID is invalid, if the user is not on your friend list, or if the API call fails.
+
+**Usage Example**
+
+This example first finds the user ID for the username "SOMEONE" and then removes that user from the friend list.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLF Y_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	// Change this to a real username that is currently on your friend list.
+	usernameToRemove := "SOMEONE"
+	fmt.Printf("\nAttempting to remove '%s' from your friend list...\n", usernameToRemove)
+
+	// Step 1: Get the user's ID from their username.
+	userID, err := client.GetUserID(usernameToRemove)
+	if err != nil {
+		log.Fatalf("Could not find user '%s': %v", usernameToRemove, err)
+	}
+	fmt.Printf("Found user ID: %s\n", userID)
+
+	// Step 2: Remove the friend using their ID.
+	response, err := client.RemoveFriend(userID)
+	if err != nil {
+		log.Fatalf("Failed to remove friend: %v", err)
+	}
+
+	// The API returns a simple confirmation message.
+	fmt.Printf("API Response: %s\n", response.Message)
+}
+```
+
+**Response Data Structure**
+
+This function returns a `MessageResponse` struct, which contains a single field:
+```go
+type MessageResponse struct {
+	Message string `json:"message"`
+}
+```
+
+---
+
+### `GetFriendLeaderboard`
+
+Retrieves the leaderboard composed exclusively of the authenticated user's friends. This is useful for comparing ranks, XP, and Elo with people you know.
+
+**Function Signature**
+```go
+func (c *Client) GetFriendLeaderboard() ([]LeaderboardEntry, error)
+```
+
+**Parameters**
+*   None.
+
+**Return Values**
+*   `([]LeaderboardEntry, nil)`: On success, returns a slice of `LeaderboardEntry` structs, where each entry represents a friend.
+*   `(nil, error)`: Returns an error if the API call fails.
+
+**Usage Example**
+
+This example fetches the friend leaderboard and prints the username, rank, and XP for the top 5 friends.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	// Fetch the leaderboard for your friends.
+	friendLeaderboard, err := client.GetFriendLeaderboard()
+	if err != nil {
+		log.Fatalf("Failed to get friend leaderboard: %v", err)
+	}
+
+	fmt.Printf("\n--- Friend Leaderboard (Top %d) ---\n", len(friendLeaderboard))
+	
+	// Loop through the leaderboard and display each friend's info.
+	for i, friend := range friendLeaderboard {
+		if i >= 5 { // Limit to 5 for this example
+			break
+		}
+		fmt.Printf("  %d. %-20s | Rank: %-5d | XP: %d\n", i+1, friend.Username, friend.Rank, friend.XP)
+	}
+	fmt.Println("------------------------------------")
+}
+```
+
+**Response Data Structure**
+
+This function returns a slice of `LeaderboardEntry` structs. For a complete list of all available fields, please refer to the `types.go` file.
+
+---
+
+### `Logout`
+
+Invalidates the current session token on the Wolfy.net server. After this call is successful, the `authToken` used to create the client will no longer be valid for any future API requests.
+
+**Function Signature**
+```go
+func (c *Client) Logout() (*MessageResponse, error)
+```
+
+**Parameters**
+*   None.
+
+**Return Values**
+*   `(*MessageResponse, nil)`: On success, returns a pointer to a `MessageResponse` struct containing the API's confirmation message.
+*   `(nil, error)`: Returns an error if the API call fails.
+
+**Usage Example**
+
+This example shows how to properly log out, invalidating the session.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	fmt.Println("\nAttempting to log out and invalidate the session token...")
+
+	// Call the Logout function.
+	response, err := client.Logout()
+	if err != nil {
+		log.Fatalf("Failed to log out: %v", err)
+	}
+
+	fmt.Printf("API Response: %s\n", response.Message)
+	fmt.Println("The session token is now invalid.")
+
+	// Any subsequent calls with this client will likely fail.
+	// For example, the following call should now return an authentication error.
+	_, err = client.GetSelfInfo()
+	if err != nil {
+		fmt.Printf("\nAs expected, a new API call failed with an error: %v\n", err)
+	}
+}
+```
+
+**Response Data Structure**
+
+This function returns a `MessageResponse` struct, which contains a single field:
+```go
+type MessageResponse struct {
+	Message string `json:"message"`
+}
+```
+
+---
+
+## Settings & Actions
+
+### `ChangeUsername`
+
+Changes the username for the currently authenticated user.
+
+**Function Signature**
+```go
+func (c *Client) ChangeUsername(newUsername string) (*MessageResponse, error)
+```
+
+**Parameters**
+*   `newUsername (string)`: The new username to set for the account.
+
+**Return Values**
+*   `(*MessageResponse, nil)`: On success, returns a pointer to a `MessageResponse` struct containing the API's confirmation message.
+*   `(nil, error)`: Returns an error if the username is already taken, is invalid, or if the API call fails.
+
+**Usage Example**
+
+This example attempts to change the user's username to "NewWolfyName".
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	newUsername := "NewWolfyName"
+	fmt.Printf("\nAttempting to change username to '%s'...\n", newUsername)
+
+	// Call the ChangeUsername function.
+	response, err := client.ChangeUsername(newUsername)
+	if err != nil {
+		// This will trigger if the name is taken, invalid, etc.
+		log.Fatalf("Failed to change username: %v", err)
+	}
+
+	fmt.Printf("API Response: %s\n", response.Message)
+}
+```
+
+**Response Data Structure**
+
+This function returns a `MessageResponse` struct, which contains a single field:
+```go
+type MessageResponse struct {
+	Message string `json:"message"`
+}
+```
+
+---
+
+### `ChangeEmail`
+
+Changes the email address for the currently authenticated user.
+
+**Function Signature**
+```go
+func (c *Client) ChangeEmail(newEmail string) (*MessageResponse, error)
+```
+
+**Parameters**
+*   `newEmail (string)`: The new email address to associate with the account.
+
+**Return Values**
+*   `(*MessageResponse, nil)`: On success, returns a pointer to a `MessageResponse` struct containing the API's confirmation message.
+*   `(nil, error)`: Returns an error if the email address is invalid, already in use, or if the API call fails.
+
+**Usage Example**
+
+This example attempts to change the user's email address.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	newEmail := "new-email@example.com"
+	fmt.Printf("\nAttempting to change email to '%s'...\n", newEmail)
+
+	// Call the ChangeEmail function.
+	response, err := client.ChangeEmail(newEmail)
+	if err != nil {
+		log.Fatalf("Failed to change email: %v", err)
+	}
+
+	fmt.Printf("API Response: %s\n", response.Message)
+}
+```
+
+**Response Data Structure**
+
+This function returns a `MessageResponse` struct, which contains a single field:
+```go
+type MessageResponse struct {
+	Message string `json:"message"`
+}
+```
+
+---
+
+### `ChangePassword`
+
+Changes the password for the currently authenticated user. This action requires both the user's current (old) password and the new password they wish to set.
+
+**Function Signature**
+```go
+func (c *Client) ChangePassword(oldPassword, newPassword string) (*MessageResponse, error)
+```
+
+**Parameters**
+*   `oldPassword (string)`: The user's current password.
+*   `newPassword (string)`: The new password to set.
+
+**Return Values**
+*   `(*MessageResponse, nil)`: On success, returns a pointer to a `MessageResponse` struct containing the API's confirmation message.
+*   `(nil, error)`: Returns an error if the old password is incorrect, if the new password is invalid, or if the API call fails.
+
+**Usage Example**
+
+This example demonstrates how to change the user's password.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	// NOTE: For security, it is highly recommended to get passwords from a secure
+	// source (like environment variables or a prompt) rather than hardcoding them.
+	oldPassword := os.Getenv("WOLFY_OLD_PASS")
+	newPassword := os.Getenv("WOLFY_NEW_PASS")
+	if oldPassword == "" || newPassword == "" {
+		log.Fatal("Please set WOLFY_OLD_PASS and WOLFY_NEW_PASS environment variables.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	fmt.Println("\nAttempting to change password...")
+
+	// Call the ChangePassword function.
+	response, err := client.ChangePassword(oldPassword, newPassword)
+	if err != nil {
+		log.Fatalf("Failed to change password: %v", err)
+	}
+
+	fmt.Printf("API Response: %s\n", response.Message)
+}
+```
+
+**Response Data Structure**
+
+This function returns a `MessageResponse` struct, which contains a single field:
+```go
+type MessageResponse struct {
+	Message string `json:"message"`
+}
+```
+
+---
+
+## Skin Management
+
+### `GetUserSkin`
+
+Fetches the rendered skin image for a given user ID. This is an unauthenticated call that does not require a valid session token to be used on the client, however, a token is still required to create the client instance itself.
+
+The function returns the raw image data as a byte slice (`[]byte`), which can be saved directly to a file (e.g., `user_skin.png`).
+
+**Function Signature**
+```go
+func (c *Client) GetUserSkin(userID, format, profile, size string) ([]byte, error)
+```
+
+**Parameters**
+*   `userID (string)`: The unique user ID of the player whose skin you want to render.
+*   `format (string)`: The desired image format. It is highly recommended to use the exported constants: `wolfyclient.SkinFormatPNG` or `wolfyclient.SkinFormatSVG`.
+*   `profile (string)`: The type of render. Use constants: `wolfyclient.SkinProfileFull` (full body), `wolfyclient.SkinProfileCenter` (face), or `wolfyclient.SkinProfileRight` (face, right-facing).
+*   `size (string)`: The desired image dimensions. This only applies to the PNG format. Use constants: `wolfyclient.SkinSizeDefault`, `wolfyclient.SkinSizeLarge`, or `wolfyclient.SkinSizeSmall`.
+
+**Return Values**
+*   `([]byte, nil)`: On success, returns the raw image data.
+*   `(nil, error)`: Returns an error if the user ID is invalid or if the server fails to render the image.
+
+**Usage Example**
+
+This example first finds the user ID for "SOMEONE", then downloads a large, full-profile PNG of their skin and saves it to `SOMEONE_skin.png`.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	// Step 1: Find the user ID.
+	username := "SOMEONE"
+	userID, err := client.GetUserID(username)
+	if err != nil {
+		log.Fatalf("Could not find user %s: %v", username, err)
+	}
+	fmt.Printf("Found user %s with ID: %s\n", username, userID)
+
+	// Step 2: Download the skin using the ID and desired format options.
+	fmt.Println("\nDownloading large, full-profile PNG of the skin...")
+	imageData, err := client.GetUserSkin(
+		userID,
+		wolfyclient.SkinFormatPNG,
+		wolfyclient.SkinProfileFull,
+		wolfyclient.SkinSizeLarge,
+	)
+	if err != nil {
+		log.Fatalf("Failed to download skin: %v", err)
+	}
+
+	// Step 3: Save the downloaded image data to a file.
+	filename := "SOMEONE_skin.png"
+	err = os.WriteFile(filename, imageData, 0644)
+	if err != nil {
+		log.Fatalf("Failed to save image to file: %v", err)
+	}
+	fmt.Printf("Success! Skin for %s saved to %s\n", username, filename)
+}
+```
+
+---
+
+### `UpdateSkinSlot`
+
+Changes the equipped cosmetic items for a specific, unlocked skin slot owned by the authenticated user. This is a powerful function that allows you to programmatically change a user's appearance.
+
+**Function Signature**
+```go
+func (c *Client) UpdateSkinSlot(slotID string, updates map[string]SkinPart) (*UpdateSkinSlotResponse, error)
+```
+
+**Parameters**
+*   `slotID (string)`: The unique ID of the skin slot to modify. You can get this from the `Slots` slice in the `UserAccountInfo` struct returned by `GetAccountDetails`.
+*   `updates (map[string]SkinPart)`: A map specifying which skin parts to change. The key is the part type (e.g., "top", "shoes"), and the value is a `SkinPart` struct defining the new item ID and color index.
+
+**Return Values**
+*   `(*UpdateSkinSlotResponse, nil)`: On success, returns a pointer to an `UpdateSkinSlotResponse` struct, which contains the user's updated list of slots and their new skin configuration.
+*   `(nil, error)`: Returns an error if the slot ID is invalid, if the user does not own one of the specified cosmetic items, or if the API call fails.
+
+**Usage Example**
+
+This example first fetches the user's account details to find their active slot ID, and then uses that ID to change their equipped shoes and top.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	// Step 1: Get the active slot ID programmatically.
+	fmt.Println("\nFetching account details to find the active slot ID...")
+	accountInfo, err := client.GetAccountDetails()
+	if err != nil {
+		log.Fatalf("Could not get account details: %v", err)
+	}
+	var activeSlotID string
+	for _, slot := range accountInfo.Slots {
+		if slot.Equiped && slot.Unlocked {
+			activeSlotID = slot.ID
+			break
+		}
+	}
+	if activeSlotID == "" {
+		log.Fatal("Could not find an active, unlocked slot for this user.")
+	}
+	fmt.Printf("Found active slot ID: %s\n", activeSlotID)
+
+	// Step 2: Define the skin parts to update.
+	// This map will change the shoes to item "S1" and the top to item "001".
+	skinUpdates := map[string]wolfyclient.SkinPart{
+		"shoes": {ID: "S1", Color: 0},
+		"top":   {ID: "001", Color: 0},
+	}
+	fmt.Println("\nAttempting to update skin slot...")
+
+	// Step 3: Call the update function.
+	updateResponse, err := client.UpdateSkinSlot(activeSlotID, skinUpdates)
+	if err != nil {
+		log.Fatalf("Failed to update skin slot: %v", err)
+	}
+
+	fmt.Println("Success! Skin slot updated.")
+	fmt.Printf("New skin version is: %s\n", updateResponse.Version)
+}
+```
+
+**Response Data Structure**
+
+This function returns an `UpdateSkinSlotResponse` struct. For a complete list of all available fields, please refer to the `types.go` file.
+
+---
+
+## Game & Shop Data
+
+### `GetSkinCatalog`
+
+Retrieves the master catalog of all available cosmetic items in the game. This function is incredibly powerful for building tools that need to understand what items exist, their properties, and their names. The response is a large array containing every skin, hat, pet, etc.
+
+**Function Signature**
+```go
+func (c *Client) GetSkinCatalog() ([]SkinElement, error)
+```
+
+**Parameters**
+*   None.
+
+**Return Values**
+*   `([]SkinElement, nil)`: On success, returns a slice of `SkinElement` structs, representing the entire cosmetic catalog.
+*   `(nil, error)`: Returns an error if the API call fails.
+
+**Usage Example**
+
+This example fetches the entire skin catalog and then performs a simple analysis to count how many items of type "hat" exist.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	// Fetch the entire cosmetic item catalog.
+	fmt.Println("\nFetching skin catalog... (This may take a moment)")
+	skinCatalog, err := client.GetSkinCatalog()
+	if err != nil {
+		log.Fatalf("Failed to get skin catalog: %v", err)
+	}
+	fmt.Printf("Successfully fetched %d total items from the catalog.\n", len(skinCatalog))
+
+	// Perform an analysis: count how many items are hats.
+	hatCount := 0
+	for _, item := range skinCatalog {
+		if item.Type == "hat" {
+			hatCount++
+		}
+	}
+
+	fmt.Printf("Analysis complete: Found %d hats in the catalog.\n", hatCount)
+}
+```
+
+**Response Data Structure**
+
+This function returns a slice of `SkinElement` structs. This is a complex structure containing details like item rarity, price, and colors. For a complete list of all available fields, please refer to the `types.go` file.
+
+---
+
+### `GetCurrentDrop`
+
+Retrieves detailed information about the current featured item drop. "Drops" are typically monthly themed releases containing exclusive, limited-time cosmetic packs.
+
+**Function Signature**
+```go
+func (c *Client) GetCurrentDrop() (*CurrentDrop, error)
+```
+
+**Parameters**
+*   None.
+
+**Return Values**
+*   `(*CurrentDrop, nil)`: On success, returns a pointer to a `CurrentDrop` struct, which contains the drop's name, duration, and a list of all cosmetic packs included in it.
+*   `(nil, error)`: Returns an error if the API call fails.
+
+**Usage Example**
+
+This example fetches the current drop and displays its name, its end date, and the name and price of the first pack available in the drop.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+	"time"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	// Fetch the current featured item drop.
+	fmt.Println("\nFetching current item drop...")
+	currentDrop, err := client.GetCurrentDrop()
+	if err != nil {
+		log.Fatalf("Failed to get current drop: %v", err)
+	}
+
+	fmt.Printf("\n--- Current Drop: %s ---\n", currentDrop.Name)
+
+	// Parse and display the end date of the drop.
+	endDate, err := time.Parse(time.RFC3339, currentDrop.End)
+	if err == nil {
+		fmt.Printf("  This drop ends on: %s\n", endDate.Format("January 2, 2006"))
+	}
+
+	// Display details about the first pack in the drop.
+	if len(currentDrop.Packs) > 0 {
+		firstPack := currentDrop.Packs[0]
+		fmt.Printf("\n--- Featured Pack ---\n")
+		fmt.Printf("  Pack Name: %s\n", firstPack.Name)
+		fmt.Printf("  Price: %d %s\n", firstPack.Price, firstPack.Currency)
+		fmt.Printf("  Rarity: %s\n", firstPack.Rarity)
+		fmt.Printf("  Number of items in pack: %d\n", len(firstPack.SkinElements))
+		fmt.Println("---------------------")
+	}
+}
+```
+
+**Response Data Structure**
+
+This function returns a `CurrentDrop` struct, which is a complex structure containing nested `DropPack` and `DropSkinElement` objects. For a complete list of all available fields, please refer to the `types.go` file.
 
 ---
