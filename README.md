@@ -182,7 +182,7 @@ type PlayerUser struct {
 This is an unofficial library and is not affiliated with, sponsored by, or endorsed by Wolfy.net. Please use this tool responsibly and be mindful of the service's terms of use. Do not abuse the API.
 
 ```
-   __                        __                
+   __                         __                
   / /  __ __   ___ ____  ____/ /__ _  _____ ____
  / _ \/ // /  / _ `/ _ \/___/ / _ \ |/ / -_) __/
 /_.__/\_, /   \_, /\___/   /_/\___/___/\__/_/   
