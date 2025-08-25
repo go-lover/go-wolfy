@@ -98,6 +98,9 @@ Updates the session cookie on an existing client instance.
 
 ---
 
+#### `func (c *Client) GetAccountDetails() (*UserAccountInfo, error)`
+Retrieves the detailed private profile for the currently authenticated user, including email, currency balances, and account settings.
+
 #### `func (c *Client) GetSelfInfo() (*PlayerInfoResponse, error)`
 Retrieves the detailed profile for the currently authenticated user.
 
