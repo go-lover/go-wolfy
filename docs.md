@@ -1230,3 +1230,300 @@ func main() {
 This function returns a `CurrentDrop` struct, which is a complex structure containing nested `DropPack` and `DropSkinElement` objects. For a complete list of all available fields, please refer to the `types.go` file.
 
 ---
+
+### `GetDailyShopOffers`
+
+Retrieves the list of daily offers from the in-game shop. This includes the free daily item, as well as a rotating selection of individual skins and cosmetic bundles available for purchase with Coins and Moons.
+
+**Function Signature**
+```go
+func (c *Client) GetDailyShopOffers() ([]DailyOfferSet, error)
+```
+
+**Parameters**
+*   None.
+
+**Return Values**
+*   `([]DailyOfferSet, nil)`: On success, returns a slice of `DailyOfferSet` structs. The first element (`[0]`) in the slice represents today's offers.
+*   `(nil, error)`: Returns an error if the API call fails.
+
+**Usage Example**
+
+This example fetches the daily shop offers and prints the details of the "free" offer and the "coinsHigh" offer (a high-value item for Coins).
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	// Fetch the daily shop offers.
+	fmt.Println("\nFetching daily shop offers...")
+	dailyOffers, err := client.GetDailyShopOffers()
+	if err != nil {
+		log.Fatalf("Failed to get daily shop offers: %v", err)
+	}
+
+	if len(dailyOffers) == 0 {
+		log.Fatal("No daily offers were returned by the API.")
+	}
+
+	// Today's offers are the first element in the response slice.
+	todaysOffers := dailyOffers[0].Elements
+
+	// Example 1: Check the free daily item.
+	freeOffer := todaysOffers.Free
+	fmt.Println("\n--- Free Daily Item ---")
+	if freeOffer.Collected {
+		fmt.Println("  You have already collected today's free item.")
+	} else {
+		fmt.Printf("  Today's free item is: %d Coins.\n", freeOffer.Coins)
+		fmt.Println("  You can claim this using the CollectDailyItem() function.")
+	}
+	fmt.Println("-----------------------")
+
+	// Example 2: Check the high-value item for sale for Coins.
+	coinsHighOffer := todaysOffers.CoinsHigh
+	fmt.Println("\n--- High-Value Coin Offer ---")
+	if coinsHighOffer.Skin != nil {
+		fmt.Printf("  Item for sale: %s\n", coinsHighOffer.Skin.Name)
+		fmt.Printf("  Price: %d %s\n", coinsHighOffer.Skin.Price, coinsHighOffer.Skin.Currency)
+	} else {
+		fmt.Println("  No individual skin is available in this slot today.")
+	}
+	fmt.Println("-----------------------------")
+}
+```
+
+**Response Data Structure**
+
+This function returns a slice of `DailyOfferSet` structs. This is a highly complex structure containing many nested objects. For a complete definition of all fields, please refer to the `types.go` file.
+
+---
+
+### `GetSubscriptionOffers`
+
+Retrieves the list of available Alpha subscription plans. This includes details like price, duration (monthly, yearly, etc.), currency, and any associated discounts.
+
+**Function Signature**
+```go
+func (c *Client) GetSubscriptionOffers() ([]SubscriptionOffer, error)
+```
+
+**Parameters**
+*   None.
+
+**Return Values**
+*   `([]SubscriptionOffer, nil)`: On success, returns a slice of `SubscriptionOffer` structs, where each entry represents a different subscription plan.
+*   `(nil, error)`: Returns an error if the API call fails.
+
+**Usage Example**
+
+This example fetches all available Alpha subscription offers and prints their details.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	// Fetch the available subscription plans.
+	fmt.Println("\nFetching Alpha subscription offers...")
+	subOffers, err := client.GetSubscriptionOffers()
+	if err != nil {
+		log.Fatalf("Failed to get subscription offers: %v", err)
+	}
+
+	fmt.Println("\n--- Available Alpha Subscriptions ---")
+	for _, offer := range subOffers {
+		fmt.Printf("  - Plan: %s\n", offer.ID)
+		fmt.Printf("    Price: %.2f %s\n", offer.Price, offer.Currency)
+		fmt.Printf("    Duration: %d %s(s)\n", offer.IntervalCount, offer.Interval)
+		if offer.MostPopular {
+			fmt.Println("    (Most Popular!)")
+		}
+		fmt.Println() // Blank line for spacing
+	}
+	fmt.Println("-------------------------------------")
+}
+```
+
+**Response Data Structure**
+
+This function returns a slice of `SubscriptionOffer` structs. For a complete list of all available fields, please refer to the `types.go` file.
+
+---
+
+### `GetMoonOffers`
+
+Retrieves the list of available Moon currency packs. Moons are a premium currency in Wolfy, and this function provides all the details for the different purchase options, including price, currency, and bonus amounts.
+
+**Function Signature**
+```go
+func (c *Client) GetMoonOffers() ([]MoonOffer, error)
+```
+
+**Parameters**
+*   None.
+
+**Return Values**
+*   `([]MoonOffer, nil)`: On success, returns a slice of `MoonOffer` structs, where each entry represents a different currency pack.
+*   `(nil, error)`: Returns an error if the API call fails.
+
+**Usage Example**
+
+This example fetches all available Moon currency packs and prints their details.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	// Fetch the available Moon currency packs.
+	fmt.Println("\nFetching Moon currency offers...")
+	moonOffers, err := client.GetMoonOffers()
+	if err != nil {
+		log.Fatalf("Failed to get Moon offers: %v", err)
+	}
+
+	fmt.Println("\n--- Available Moon Packs ---")
+	for _, offer := range moonOffers {
+		totalMoons := offer.Moons + offer.Bonus
+		fmt.Printf("  - ID: %s\n", offer.ID)
+		fmt.Printf("    Get %d Moons (includes %d bonus) for %.2f %s\n", totalMoons, offer.Bonus, offer.Price, offer.Currency)
+		if offer.Tag != "" {
+			fmt.Printf("    (%s deal!)\n", offer.Tag)
+		}
+		fmt.Println() // Blank line for spacing
+	}
+	fmt.Println("----------------------------")
+}
+```
+
+**Response Data Structure**
+
+This function returns a slice of `MoonOffer` structs. For a complete list of all available fields, please refer to the `types.go` file.
+
+---
+
+### `CollectDailyItem`
+
+Attempts to claim the free daily item from the shop for the authenticated user. This function is an action and does not return complex data.
+
+**Function Signature**
+```go
+func (c *Client) CollectDailyItem() (string, error)
+```
+
+**Parameters**
+*   None.
+
+**Return Values**
+*   `(string, nil)`: On success, returns the raw text response from the API. This is typically a simple string like `"OK"` if the collection was successful, or a descriptive message if the item has already been collected (e.g., `"already_collected"`).
+*   `("", error)`: Returns an empty string and an error if the API call fails.
+
+**Usage Example**
+
+This example first checks the daily offers to see if the free item has been collected. If it has not, it calls `CollectDailyItem` to claim it.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	// Step 1: Check if the daily item has already been collected.
+	fmt.Println("\nChecking status of daily free item...")
+	dailyOffers, err := client.GetDailyShopOffers()
+	if err != nil {
+		log.Fatalf("Could not check daily offers: %v", err)
+	}
+
+	if len(dailyOffers) == 0 {
+		log.Fatal("No daily offers found.")
+	}
+
+	if dailyOffers[0].Elements.Free.Collected {
+		fmt.Println("You have already collected today's free item.")
+	} else {
+		// Step 2: If not collected, attempt to claim it.
+		fmt.Println("Free item has not been collected yet. Attempting to claim it now...")
+		
+		response, err := client.CollectDailyItem()
+		if err != nil {
+			log.Fatalf("Failed to collect daily item: %v", err)
+		}
+		
+		fmt.Printf("Successfully sent collection request. API Response: %s\n", response)
+	}
+}
+```
