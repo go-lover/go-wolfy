@@ -39,9 +39,9 @@ type FriendsResponse struct {
 
 // PlayerInfoResponse is the top-level response from the /leaderboard/player endpoint.
 type PlayerInfoResponse struct {
-	User       PlayerUser       `json:"user"`
-	Statistics PlayerStatistics `json:"statistics"`
-	History    []interface{}    `json:"history"` // Kept as interface{} as the structure is unknown
+	User       PlayerUser         `json:"user"`
+	Statistics PlayerStatistics   `json:"statistics"`
+	History    []GameHistoryEntry `json:"history"`
 }
 
 // PlayerUser contains detailed information about a specific player.
@@ -73,4 +73,59 @@ type PlayerIndividualStats struct {
 	WinCount  int     `json:"winCount"`
 	KillCount int     `json:"killCount"`
 	WordAvg   float64 `json:"wordAvg"`
+}
+
+// GameSettings holds the specific rules and role composition for a game.
+type GameSettings struct {
+	Slots     int            `json:"slots"`
+	Mayor     bool           `json:"mayor"`
+	Roles     map[string]int `json:"roles"`
+	Balancing int            `json:"balancing"`
+}
+
+// Game holds detailed information about a specific match instance.
+type Game struct {
+	ID          string       `json:"id"`
+	InstanceID  string       `json:"instanceId"`
+	Status      int          `json:"status"`
+	PlayerCount int          `json:"playerCount"`
+	Settings    GameSettings `json:"settings"`
+	Private     bool         `json:"private"`
+	Voice       bool         `json:"voice"`
+	Serious     bool         `json:"serious"`
+	Platform    string       `json:"platform"`
+	Lang        string       `json:"lang"`
+	CreatedAt   string       `json:"createdAt"`
+	UpdatedAt   string       `json:"updatedAt"`
+	NextID      interface{}  `json:"nextId"` // Can be null
+	AdminID     string       `json:"adminId"`
+}
+
+// DeathReason provides details on how a player died in a game.
+// Fields are optional as they depend on the type of death.
+type DeathReason struct {
+	Type      string   `json:"type"`
+	DayNumber int      `json:"dayNumber"`
+	VotersIDs []string `json:"votersIds,omitempty"`
+	HunterID  string   `json:"hunterId,omitempty"`
+	MayorID   string   `json:"mayorId,omitempty"`
+	LoverID   string   `json:"loverId,omitempty"`
+}
+
+// GameHistoryEntry represents a single game played by the user in their history.
+type GameHistoryEntry struct {
+	Role        string       `json:"role"`
+	Winner      bool         `json:"winner"`
+	DeathReason *DeathReason `json:"deathReason"` // Pointer to handle null
+	WordCount   int          `json:"wordCount"`
+	KillCount   int          `json:"killCount"`
+	XP          int          `json:"xp"`
+	Elo         int          `json:"elo"`
+	Lovers      bool         `json:"lovers"`
+	Infected    bool         `json:"infected"`
+	UserID      string       `json:"userId"`
+	GameID      string       `json:"gameId"`
+	CreatedAt   string       `json:"createdAt"`
+	UpdatedAt   string       `json:"updatedAt"`
+	Game        Game         `json:"game"`
 }
