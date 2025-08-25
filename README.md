@@ -85,7 +85,6 @@ func main() {
 ## API Reference
 
 ### Client Initialization
-
 ---
 
 #### `func NewClient(authToken string) (*Client, error)`
@@ -95,17 +94,16 @@ Creates and configures a new API client. It immediately validates the `authToken
 Updates the session cookie on an existing client instance.
 
 ### Account & Social Methods
-
 ---
 
 #### `func (c *Client) GetAccountDetails() (*UserAccountInfo, error)`
-Retrieves the detailed private profile for the currently authenticated user, including email, currency balances, and account settings.
+Retrieves the detailed private profile for the currently authenticated user, including email, currency balances, owned slots, and account settings.
 
 #### `func (c *Client) GetSelfInfo() (*PlayerInfoResponse, error)`
-Retrieves the detailed profile for the currently authenticated user.
+Retrieves the detailed public profile (leaderboard version) for the currently authenticated user.
 
 #### `func (c *Client) GetPlayerInfo(usernameOrID string) (*PlayerInfoResponse, error)`
-Retrieves the detailed profile for any player by their username or ID.
+Retrieves the detailed public profile for any player by their username or ID, including their game history.
 
 #### `func (c *Client) GetUserID(username string) (string, error)`
 Finds a user by their exact username and returns their unique ID.
@@ -113,30 +111,20 @@ Finds a user by their exact username and returns their unique ID.
 #### `func (c *Client) GetFriendList() ([]string, error)`
 Retrieves a slice of user IDs representing the authenticated user's friend list.
 
-#### `func (c *Client) GetFriendLeaderboard() ([]LeaderboardEntry, error)`
-Retrieves the leaderboard of the authenticated user's friends, returning a slice of users with their rank and summary information.
-
 #### `func (c *Client) AddFriend(userID string) (*MessageResponse, error)`
 Sends a friend request to the specified user ID.
 
 #### `func (c *Client) RemoveFriend(userID string) (*MessageResponse, error)`
 Removes the specified user from the authenticated user's friend list.
 
+#### `func (c *Client) GetFriendLeaderboard() ([]LeaderboardEntry, error)`
+Retrieves the leaderboard of the authenticated user's friends, returning a slice of users with their rank and summary information.
+
 #### `func (c *Client) Logout() (*MessageResponse, error)`
 Invalidates the current user's session on the server.
 
-### Actions & Settings Methods
-
+### Settings & Actions
 ---
-
-#### `func (c *Client) GetSkinCatalog() ([]SkinElement, error)`
-Retrieves the master catalog of all available cosmetic items in the game.
-
-#### `func (c *Client) GetCurrentDrop() (*CurrentDrop, error)`
-Retrieves details about the current featured item drop, including available cosmetic packs.
-
-#### `func (c *Client) CollectDailyItem() (string, error)`
-Attempts to claim the free daily item from the shop. Returns a plain text response from the API (e.g., "OK").
 
 #### `func (c *Client) ChangeUsername(newUsername string) (*MessageResponse, error)`
 Changes the authenticated user's username.
@@ -147,23 +135,37 @@ Changes the authenticated user's email address.
 #### `func (c *Client) ChangePassword(oldPassword, newPassword string) (*MessageResponse, error)`
 Changes the authenticated user's password.
 
-### Skin Rendering
-
+### Skin Management
 ---
 
 #### `func (c *Client) GetUserSkin(userID, format, profile, size string) ([]byte, error)`
-Fetches the rendered skin image for a given user ID. This is an unauthenticated call and does not require a valid session token. It returns the raw image data as a byte slice (`[]byte`), which can be saved to a file.
+Fetches the rendered skin image for a given user ID. This is an unauthenticated call. It returns the raw image data as a byte slice (`[]byte`), which can be saved to a file. See the constants table for available options.
 
-Use the exported constants for the `format`, `profile`, and `size` arguments for clarity and to avoid errors.
+#### `func (c *Client) UpdateSkinSlot(slotID string, updates map[string]SkinPart) (*UpdateSkinSlotResponse, error)`
+Changes the equipped cosmetic items for a specific skin slot. The `updates` map should contain the skin parts to change, e.g., `"top": SkinPart{ID:"002", Color:5}`.
 
-| Parameter | Available Constants                                 | Description                                 |
-| :-------- | :-------------------------------------------------- | :------------------------------------------ |
-| `format`  | `SkinFormatPNG`, `SkinFormatSVG`                    | The image file format.                      |
-| `profile` | `SkinProfileFull`, `SkinProfileCenter`, `SkinProfileRight` | The type of render (full body or face).     |
-| `size`    | `SkinSizeDefault`, `SkinSizeLarge`, `SkinSizeSmall` | The image dimensions (only applies to PNG). |
+### Game & Shop Data
+---
 
+#### `func (c *Client) GetSkinCatalog() ([]SkinElement, error)`
+Retrieves the master catalog of all available cosmetic items in the game.
 
-## Data Structures
+#### `func (c *Client) GetCurrentDrop() (*CurrentDrop, error)`
+Retrieves details about the current featured item drop, including available cosmetic packs.
+
+#### `func (c *Client) GetDailyShopOffers() ([]DailyOfferSet, error)`
+Retrievelist of daily offers from the shop, including the free item and rotating skins.
+
+#### `func (c *Client) GetSubscriptionOffers() ([]SubscriptionOffer, error)`
+Retrieves the available Alpha subscription plans.
+
+#### `func (c *Client) GetMoonOffers() ([]MoonOffer, error)`
+Retrieves the available Moon currency purchase options.
+
+#### `func (c *Client) CollectDailyItem() (string, error)`
+Attempts to claim the free daily item from the shop. Returns a plain text response from the API.## Data Structures
+
+---
 
 The main data structure returned by the API for player lookups.
 
