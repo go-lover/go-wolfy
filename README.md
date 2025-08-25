@@ -8,6 +8,7 @@ This library handles session management via an authentication token and provides
 -   **Token Validation:** Automatically validates the session token upon client creation.
 -   **Typed Structs:** Clear Go structs for all JSON API responses.
 -   **Advanced Skin Rendering:** A powerful function to download user skins with multiple formats (PNG, SVG), profiles (full, center, right), and sizes (small, large).
+-   **Rich Game History:** Access strongly-typed data for a player's recent games, including roles, outcomes, kills, and full game settings.
 
 ### Authentication (Required)
 
