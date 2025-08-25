@@ -192,3 +192,145 @@ func main() {
 **Response Data Structure**
 
 This function returns a `PlayerInfoResponse` struct. This is a complex structure that includes the user's game history and detailed statistics. For a complete list of all available fields, please refer to the `types.go` file.
+
+---
+
+### `GetPlayerInfo`
+
+Retrieves the detailed public profile for any player by their username or unique ID. This is the ideal function for looking up other players to see their stats, rank, and game history.
+
+The data returned is the same structure as `GetSelfInfo`.
+
+**Function Signature**
+```go
+func (c *Client) GetPlayerInfo(usernameOrID string) (*PlayerInfoResponse, error)
+```
+
+**Parameters**
+*   `usernameOrID (string)`: The exact username or the unique user ID of the player you want to look up.
+
+**Return Values**
+*   `(*PlayerInfoResponse, nil)`: On success, returns a pointer to a `PlayerInfoResponse` struct containing the player's public profile data.
+*   `(nil, error)`: Returns an error if the user is not found, or if the API call fails for other reasons.
+
+**Usage Example**
+
+This example looks up the user "flic" and displays their rank, total kill count, and the outcome of their most recent game.
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	// The username of the player we want to find.
+	usernameToFind := "flic"
+
+	// Fetch the public profile information for the specified user.
+	playerInfo, err := client.GetPlayerInfo(usernameToFind)
+	if err != nil {
+		log.Fatalf("Failed to get info for player '%s': %v", usernameToFind, err)
+	}
+
+	// Display some of the retrieved data.
+	fmt.Printf("\n--- Public Profile for %s ---\n", playerInfo.User.Username)
+	fmt.Printf("  Rank: %d\n", playerInfo.User.Rank)
+	fmt.Printf("  Total Kills: %d\n", playerInfo.Statistics.Individual.KillCount)
+
+	// Display details from their most recent game.
+	if len(playerInfo.History) > 0 {
+		mostRecentGame := playerInfo.History[0]
+		outcome := "Loss"
+		if mostRecentGame.Winner {
+			outcome = "Win"
+		}
+		fmt.Printf("  Most Recent Game: %s as role '%s'\n", outcome, mostRecentGame.Role)
+	}
+	fmt.Println("---------------------------------")
+}
+```
+
+**Response Data Structure**
+
+This function returns a `PlayerInfoResponse` struct. For a complete list of all available fields and sub-structures, please refer to the `types.go` file.
+
+---
+
+### `GetUserID`
+
+Finds a user by their exact username and returns their unique user ID as a string. This is a convenient helper function to use when you have a username but need the ID to perform other actions, such as `AddFriend` or `RemoveFriend`.
+
+**Function Signature**
+```go
+func (c *Client) GetUserID(username string) (string, error)
+```
+
+**Parameters**
+*   `username (string)`: The exact username of the player to find.
+
+**Return Values**
+*   `(string, nil)`: On success, returns the user's unique ID.
+*   `("", error)`: Returns an empty string and an error if the user is not found or if the API call fails.
+
+**Usage Example**
+
+This example demonstrates how to find the user ID for the username "flic".
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	wolfyclient "github.com/go-lover/go-wolfy"
+)
+
+func main() {
+	mySessionToken := os.Getenv("WOLFY_TOKEN")
+	if mySessionToken == "" {
+		log.Fatal("WOLFY_TOKEN environment variable not set.")
+	}
+
+	client, err := wolfyclient.NewClient(mySessionToken)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	fmt.Println("Client created successfully!")
+
+	usernameToFind := "flic"
+	fmt.Printf("\nLooking up user ID for: %s\n", usernameToFind)
+
+	// Use the GetUserID helper function.
+	userID, err := client.GetUserID(usernameToFind)
+	if err != nil {
+		log.Fatalf("Could not find user '%s': %v", usernameToFind, err)
+	}
+
+	fmt.Printf("Successfully found ID: %s\n", userID)
+}
+```
+
+**Notes**
+
+This function works by calling `GetPlayerInfo` internally and extracting the `ID` from the response.
+
+---
