@@ -132,6 +132,9 @@ Invalidates the current user's session on the server.
 #### `func (c *Client) GetSkinCatalog() ([]SkinElement, error)`
 Retrieves the master catalog of all available cosmetic items in the game.
 
+#### `func (c *Client) GetCurrentDrop() (*CurrentDrop, error)`
+Retrieves details about the current featured item drop, including available cosmetic packs.
+
 #### `func (c *Client) CollectDailyItem() (string, error)`
 Attempts to claim the free daily item from the shop. Returns a plain text response from the API (e.g., "OK").
 
