@@ -25,6 +25,8 @@ This library handles session management via an authentication token and provides
 
 *   **Rich Game History:** Access strongly-typed data for a player's recent games, including roles, outcomes, kills, and full game settings.
 
+---
+
 ### Authentication (Required)
 
 This library **does not** handle username/password login because the website is protected by a captcha. Instead, it authenticates by using a session token that you must retrieve from your browser.
