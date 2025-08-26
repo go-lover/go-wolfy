@@ -40,20 +40,25 @@ type FriendsResponse struct {
 // PlayerInfoResponse is the top-level response from the /leaderboard/player endpoint.
 type PlayerInfoResponse struct {
 	User       PlayerUser         `json:"user"`
+	IsFriend   bool               `json:"isFriend"`
 	Statistics PlayerStatistics   `json:"statistics"`
 	History    []GameHistoryEntry `json:"history"`
 }
 
 // PlayerUser contains detailed information about a specific player.
 type PlayerUser struct {
-	ID          string        `json:"id"`
-	Username    string        `json:"username"`
-	CreatedAt   string        `json:"createdAt"` // Consider parsing to time.Time if needed
-	Rank        int           `json:"rank"`
-	XP          int           `json:"xp"`
-	SkinVersion string        `json:"skinVersion"`
-	Elo         int           `json:"elo"`
-	Ranking     PlayerRanking `json:"ranking"`
+	ProfilePicture   string        `json:"profilePicture"`
+	ID               string        `json:"id"`
+	Username         string        `json:"username"`
+	Rank             int           `json:"rank"`
+	XP               int           `json:"xp"`
+	SlotID           string        `json:"slotId"`
+	SkinVersion      string        `json:"skinVersion"`
+	Elo              int           `json:"elo"`
+	CreatedAt        string        `json:"createdAt"`
+	MonthsSubscribed int           `json:"monthsSubscribed"`
+	GamePlayed       int           `json:"gamePlayed"`
+	Ranking          PlayerRanking `json:"ranking"`
 }
 
 // PlayerRanking holds the Elo ranking details for a user.
@@ -62,14 +67,46 @@ type PlayerRanking struct {
 	Percent float64 `json:"percent"`
 }
 
+// RoleStats contains win rate and advanced statistics for a specific role.
+type RoleStats struct {
+	ID            string             `json:"id"`
+	WinRate       float64            `json:"winRate"`
+	AdvancedStats map[string]float64 `json:"advancedStats"`
+}
+
+// GameTypeAdvancedStats contains overall advanced stats for a game alignment (innocent/threat).
+type GameTypeAdvancedStats struct {
+	Inactivity     float64 `json:"inactivity"`
+	DaysAlive      float64 `json:"daysAlive"`
+	Mayor          float64 `json:"mayor"`
+	GoodVote       float64 `json:"goodVote,omitempty"`
+	InnocentKilled float64 `json:"innocentKilled,omitempty"`
+}
+
+// GameTypeStats contains the overall win rate and stats for an alignment.
+type GameTypeStats struct {
+	ID            string                `json:"id"`
+	WinRate       float64               `json:"winRate"`
+	AdvancedStats GameTypeAdvancedStats `json:"advancedStats"`
+}
+
+// OverallGameStats holds the statistics broken down by alignment (innocent vs. threat).
+type OverallGameStats struct {
+	Innocent GameTypeStats `json:"innocent"`
+	Threat   GameTypeStats `json:"threat"`
+}
+
 // PlayerStatistics holds the gameplay statistics for a user.
 type PlayerStatistics struct {
-	Individual PlayerIndividualStats `json:"individual"`
 	Laurels    map[string]int        `json:"laurels"`
+	Individual PlayerIndividualStats `json:"individual"`
+	Roles      []RoleStats           `json:"roles"`
+	Game       OverallGameStats      `json:"game"`
 }
 
 // PlayerIndividualStats contains specific win, kill, and word counts.
 type PlayerIndividualStats struct {
+	Moonpass  int     `json:"moonpass"`
 	WinCount  int     `json:"winCount"`
 	KillCount int     `json:"killCount"`
 	WordAvg   float64 `json:"wordAvg"`
@@ -176,6 +213,11 @@ type UserAccountInfo struct {
 	ID                  string      `json:"id"`
 	Username            string      `json:"username"`
 	Email               string      `json:"email"`
+	TwitterID           interface{} `json:"twitterId"`
+	FacebookID          interface{} `json:"facebookId"`
+	GoogleID            interface{} `json:"googleId"`
+	DiscordID           interface{} `json:"discordId"`
+	AppleID             interface{} `json:"appleId"`
 	ProfilePicture      string      `json:"profilePicture"`
 	XP                  int         `json:"xp"`
 	Elo                 int         `json:"elo"`
@@ -183,14 +225,25 @@ type UserAccountInfo struct {
 	Moons               int         `json:"moons"`
 	Rank                int         `json:"rank"`
 	SkinVersion         string      `json:"skinVersion"`
+	SkinIndex           int         `json:"skinIndex"`
+	AnonymousSkinIndex  int         `json:"anonymousSkinIndex"`
+	SlotID              string      `json:"slotId"`
+	AnonymousSlotID     interface{} `json:"anonymousSlotId"`
 	AllowFriendRequests bool        `json:"allowFriendRequests"`
 	AllowGroupRequests  bool        `json:"allowGroupRequests"`
 	AllowNewsletter     bool        `json:"allowNewsletter"`
+	Nickname            interface{} `json:"nickname"`
 	Confirmed           bool        `json:"confirmed"`
+	DiscountEndAt       interface{} `json:"discountEndAt"`
 	TwoFactorSecret     bool        `json:"twoFactorSecret"`
 	Lang                string      `json:"lang"`
+	BanEnd              interface{} `json:"ban_end"`
+	ReasonBan           interface{} `json:"reason_ban"`
+	NeedRename          bool        `json:"needRename"`
 	Banned              bool        `json:"banned"`
-	Password            bool        `json:"password"` // True if a password is set
+	FriendsVisibility   string      `json:"friendsVisibility"`
+	AlphaLegacy         bool        `json:"alphaLegacy"`
+	Password            bool        `json:"password"`
 	Token               TokenInfo   `json:"token"`
 	Slots               []Slot      `json:"slots"`
 	Skin                Skin        `json:"skin"`
@@ -352,8 +405,6 @@ type DailyOfferSet struct {
 	Elements OfferElements `json:"elements"`
 }
 
-// --- Structs for Subscription Offers (/shop/subscriptions/offers) ---
-
 // SubscriptionOffer represents a single purchasable Alpha subscription plan.
 type SubscriptionOffer struct {
 	ID            string  `json:"id"`
@@ -366,8 +417,6 @@ type SubscriptionOffer struct {
 	Badge         string  `json:"badge"`
 	MostPopular   bool    `json:"mostPopular,omitempty"`
 }
-
-// --- Structs for Moon Offers (/shop/offers) ---
 
 // MoonOffer represents a single purchasable pack of Moon currency.
 type MoonOffer struct {
