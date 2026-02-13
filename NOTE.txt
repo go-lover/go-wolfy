@@ -1,3 +1,0 @@
-better version at https://gitlab.com/go-lover/go-wolfy/
-
-not maintained
