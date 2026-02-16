@@ -30,6 +30,8 @@ Because Wolfy.net uses Captcha for login, this library uses your **Session Token
 
 **Treat this token like a password.** Do not share it or commit it to public repositories.
 
+**Note:** In the code example below, the session token is set as an environment variable named `WOLFY_TOKEN`. Ensure you set this environment variable before running the code.
+
 ## Usage Example
 
 ```go
@@ -82,4 +84,5 @@ This is an unofficial library and is not affiliated with, sponsored by, or endor
 ## License
 
 Distributed under the **MIT License**. See `LICENSE` for more information.
+
 
