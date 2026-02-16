@@ -68,9 +68,9 @@ func (c *Client) GetUserSkin(userID, format, profile, size string) ([]byte, erro
 	return imageData, nil
 }
 
-// GetPlayerInfo retrieves the detailed profile for a given player by their username or ID.
-func (c *Client) GetPlayerInfo(usernameOrID string) (*PlayerInfoResponse, error) {
-	path := fmt.Sprintf("/leaderboard/player/%s", usernameOrID)
+// GetPlayerInfo retrieves the detailed profile for a given player by their username.
+func (c *Client) GetPlayerInfo(username string) (*PlayerInfoResponse, error) {
+	path := fmt.Sprintf("/leaderboard/player/%s", username)
 	req, err := c.newRequest("GET", path, nil)
 	if err != nil {
 		return nil, err
@@ -96,3 +96,4 @@ func (c *Client) GetUserID(username string) (string, error) {
 	// Success! Return the ID from the player data.
 	return playerInfo.User.ID, nil
 }
+
