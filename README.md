@@ -1,4 +1,4 @@
-# go-wolfy [![Go Reference](https://pkg.go.dev/badge/github.com/go-lover/go-wolfy.svg)](https://pkg.go.dev/github.com/go-lover/go-wolfy) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+# [go-wolfy](https://github.com/go-lover/go-wolfy/wiki) [![Go Reference](https://pkg.go.dev/badge/github.com/go-lover/go-wolfy.svg)](https://pkg.go.dev/github.com/go-lover/go-wolfy) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An unofficial, robust, and strictly-typed Go client library for the **[Wolfy.net](https://wolfy.net)** API.
 
@@ -82,3 +82,4 @@ This is an unofficial library and is not affiliated with, sponsored by, or endor
 ## License
 
 Distributed under the **MIT License**. See `LICENSE` for more information.
+
